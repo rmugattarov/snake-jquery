@@ -1,28 +1,13 @@
+import {createGrid, getOppositeDirection, setSnakeTile, setWaterTile, getDirectionFromKeycode} from './util.js';
+
 const gridSize = 15;
 const snakeInitSize = 3;
 const directions = [0, 90, 180, 270];
 
-const grid = createGrid();
+const grid = createGrid(gridSize);
 const snake = [];
 let newDirection = _.sample(directions);
 let direction = newDirection;
-
-function createRow(rowNum) {
-    let row = $('<tr></tr>');
-    for (let i = 0; i < gridSize; i++) {
-        row.append($(`<td id='${rowNum}_${i}'></td>`));
-    }
-    return row;
-}
-
-function createGrid() {
-    let table = $('<table id="grid"></table>');
-    for (let i = 0; i < gridSize; i++) {
-        table.append(createRow(i));
-    }
-    return table;
-}
-
 
 function initSnake() {
     let row = _.random(0, gridSize - 1);
@@ -40,20 +25,6 @@ function initSnake() {
         move();
     }, 800);
 
-}
-
-function getOppositeDirection(direction) {
-    let result = 0;
-    if (direction === 0) {
-        result = 180;
-    } else if (direction === 90) {
-        result = 270;
-    } else if (direction === 180) {
-        result = 0;
-    } else if (direction === 270) {
-        result = 90;
-    }
-    return result;
 }
 
 function getTileAtDirection(tile, direction) {
@@ -81,14 +52,6 @@ function drawSnake() {
     });
 }
 
-function setSnakeTile(tile) {
-    $(`#${tile.row}_${tile.col}`).css('background-color', 'white');
-}
-
-function setWaterTile(tile) {
-    $(`#${tile.row}_${tile.col}`).css('background-color', 'aqua');
-}
-
 function move() {
     if (newDirection !== getOppositeDirection(direction)) {
         direction = newDirection;
@@ -96,20 +59,6 @@ function move() {
     snake.unshift(getTileAtDirection(_.head(snake), direction));
     setWaterTile(snake.pop());
     drawSnake();
-}
-
-function getDirectionFromKeycode(code) {
-    let result = 0;
-    if (code === 37) {
-        result = 180;
-    } else if (code === 38) {
-        result = 90;
-    } else if (code === 39) {
-        result = 0;
-    } else if (code === 40) {
-        result = 270;
-    }
-    return result;
 }
 
 document.addEventListener('keydown', (e) => {
