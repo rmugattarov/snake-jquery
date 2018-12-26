@@ -45,4 +45,22 @@ function getDirectionFromKeycode(code) {
     }
     return result;
 }
-export {createGrid, getOppositeDirection, setSnakeTile, setWaterTile, getDirectionFromKeycode};
+function randomTile(gridSize) {
+    let row = _.random(0, gridSize - 1);
+    let col = _.random(0, gridSize - 1);
+    return {row, col};
+}
+function getTileAtDirection(tile, direction, gridSize) {
+    let {row, col} = tile;
+    if (direction === 0) {
+        col = (col + 1) % gridSize;
+    } else if (direction === 90) {
+        row = (row - 1 + gridSize) % gridSize;
+    } else if (direction === 180) {
+        col = (col - 1 + gridSize) % gridSize;
+    } else if (direction === 270) {
+        row = (row + 1) % gridSize;
+    }
+    return {row, col};
+}
+export {createGrid, getOppositeDirection, setSnakeTile, setWaterTile, getDirectionFromKeycode, randomTile, getTileAtDirection};

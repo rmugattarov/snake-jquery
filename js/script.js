@@ -1,4 +1,4 @@
-import {createGrid, getOppositeDirection, setSnakeTile, setWaterTile, getDirectionFromKeycode} from './util.js';
+import {createGrid, getOppositeDirection, setSnakeTile, setWaterTile, getDirectionFromKeycode, randomTile, getTileAtDirection} from './util.js';
 
 const gridSize = 15;
 const snakeInitSize = 3;
@@ -10,15 +10,11 @@ let newDirection = _.sample(directions);
 let direction = newDirection;
 
 function initSnake() {
-    let row = _.random(0, gridSize - 1);
-    let col = _.random(0, gridSize - 1);
-    snake.push({row, col});
-    console.log('direction', newDirection);
-    let oppositeDirection = getOppositeDirection(newDirection);
+    snake.push(randomTile(gridSize));
+    let oppositeDirection = getOppositeDirection(direction);
     for (let i = 1; i < snakeInitSize; i++) {
         addToTailAtDirection(oppositeDirection);
     }
-    console.log('init snake', snake);
     drawSnake();
 
     setInterval(() => {
@@ -27,23 +23,9 @@ function initSnake() {
 
 }
 
-function getTileAtDirection(tile, direction) {
-    let {row, col} = tile;
-    if (direction === 0) {
-        col = (col + 1) % gridSize;
-    } else if (direction === 90) {
-        row = (row - 1 + gridSize) % gridSize;
-    } else if (direction === 180) {
-        col = (col - 1 + gridSize) % gridSize;
-    } else if (direction === 270) {
-        row = (row + 1) % gridSize;
-    }
-    return {row, col};
-}
-
 function addToTailAtDirection(direction) {
     let tail = _.last(snake);
-    snake.push(getTileAtDirection(tail, direction));
+    snake.push(getTileAtDirection(tail, direction, gridSize));
 }
 
 function drawSnake() {
@@ -56,7 +38,7 @@ function move() {
     if (newDirection !== getOppositeDirection(direction)) {
         direction = newDirection;
     }
-    snake.unshift(getTileAtDirection(_.head(snake), direction));
+    snake.unshift(getTileAtDirection(_.head(snake), direction, gridSize));
     setWaterTile(snake.pop());
     drawSnake();
 }
