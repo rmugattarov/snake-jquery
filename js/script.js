@@ -24,11 +24,12 @@ function initSnake() {
     setInterval(() => {
         move();
         redraw();
-    }, 800);
+    }, 600);
 
 }
 
 function createRandomSnake() {
+    snake.splice(0, snake.length);
     snake.push(randomTile(gridSize));
     let oppositeDirection = getOppositeDirection(direction);
     for (let i = 1; i < snakeInitSize; i++) {
