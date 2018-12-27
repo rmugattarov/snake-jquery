@@ -14,7 +14,7 @@ let timerId;
 let gamePace = 500;
 let moveCount = 0;
 
-function initSnake() {
+function startGame() {
     createRandomSnake();
     timerId = setInterval(() => move(), gamePace);
 }
@@ -132,6 +132,7 @@ function moveSnake() {
     if (newHead.hasClass('snake') || newHead.hasClass('digesting')) {
         clearInterval(timerId);
         alert(`Game Over!\nYour score is ${snake.length}00!`);
+        restartGame();
         return;
     }
 
@@ -152,6 +153,19 @@ function moveSnake() {
     }
 }
 
+function restartGame() {
+    clearField();
+    startGame();
+
+}
+
+function clearField() {
+    snake.splice(0, snake.length);
+    moveCount = 0;
+    gamePace = 500;
+    $('td.snake,td.food,td.digesting').removeClass().addClass('empty');
+}
+
 document.addEventListener('keydown', (e) => {
     let arrowDirection = getDirectionFromKeyCode(e.keyCode);
     if (newDirection !== getOppositeDirection(newDirection)) {
@@ -161,5 +175,5 @@ document.addEventListener('keydown', (e) => {
 
 $(function () {
     $('#root').append(grid);
-    initSnake();
+    startGame();
 });
