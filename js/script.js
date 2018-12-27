@@ -4,18 +4,36 @@ const snake = [];
 
 const gridSize = 15;
 const snakeInitSize = 3;
+const totalTilesCount = gridSize * gridSize;
+let foodCount = 0;
 const directions = [0, 90, 180, 270];
 
 const grid = createGrid();
 let newDirection = _.sample(directions);
 let direction = newDirection;
+let timerId;
+let gamePace = 500;
+let moveCount = 0;
 
 function initSnake() {
     createRandomSnake();
+    timerId = setInterval(() => move(), gamePace);
+}
 
-    setInterval(() => {
-        move();
-    }, 600);
+
+function move() {
+    moveCount++;
+    moveSnake();
+    placeFood();
+    speedUpGame();
+}
+
+function speedUpGame() {
+    if (gamePace > 150 && moveCount % 10 === 0) {
+        clearInterval(timerId);
+        gamePace -= 50;
+        timerId = setInterval(() => move(), gamePace);
+    }
 }
 
 function createRandomSnake() {
@@ -31,6 +49,14 @@ function createRandomSnake() {
         drawSnakeTile(tail);
         head = tail;
     }
+}
+
+function placeFood() {
+    if (foodCount !== 0) return;
+    let emptyTilesCount = totalTilesCount - snake.length;
+    let targetTile = $('td.empty').eq(_.random(0, emptyTilesCount));
+    drawFoodTile(targetTile);
+    foodCount = 1;
 }
 
 function getCoords(tile) {
@@ -57,16 +83,19 @@ function createGrid() {
 }
 
 function drawSnakeTile(tile) {
-    tile.removeClass()
-        .addClass('snake')
-        .css('background-color', 'aqua');
-    return tile;
+    return tile.removeClass().addClass('snake');
 }
+
+function drawDigestingTile(tile) {
+    return tile.removeClass().addClass('digesting');
+}
+
 function drawEmptyTile(tile) {
-    tile.removeClass()
-        .addClass('empty')
-        .css('background-color', 'white');
-    return tile;
+    return tile.removeClass().addClass('empty');
+}
+
+function drawFoodTile(tile) {
+    return tile.removeClass().addClass('food');
 }
 
 function getTile(coords) {
@@ -94,16 +123,35 @@ function getNeighborTileAtDirection(tile, direction) {
     return getTile({row, col});
 }
 
-function move() {
+function moveSnake() {
     if (newDirection !== getOppositeDirection(direction)) {
         direction = newDirection;
     }
     let head = getTile({row: snake[0].row, col: snake[0].col});
     let newHead = getNeighborTileAtDirection(head, direction);
+
+    if (newHead.hasClass('snake') || newHead.hasClass('digesting')) {
+        clearInterval(timerId);
+        alert(`Game Over!\nYour score is ${snake.length}00!`);
+        return;
+    }
+
     snake.unshift(getCoords(newHead));
-    drawSnakeTile(newHead);
-    let tail = getTile(snake.pop());
-    drawEmptyTile(tail);
+
+    if (newHead.hasClass('food')) {
+        foodCount--;
+        drawDigestingTile(newHead);
+    } else {
+        drawSnakeTile(newHead);
+    }
+
+    let tail = getTile(_.last(snake));
+    if (tail.hasClass('digesting')) {
+        drawSnakeTile(tail);
+    } else {
+        snake.pop();
+        drawEmptyTile(tail);
+    }
 }
 
 document.addEventListener('keydown', (e) => {
