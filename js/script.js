@@ -5,7 +5,6 @@ const snake = [];
 const gridSize = 15;
 const snakeInitSize = 3;
 const totalTilesCount = gridSize * gridSize;
-let foodCount = 0;
 const directions = [0, 90, 180, 270];
 
 const grid = createGrid();
@@ -52,11 +51,11 @@ function createRandomSnake() {
 }
 
 function placeFood() {
-    if (foodCount !== 0) return;
-    let emptyTilesCount = totalTilesCount - snake.length;
-    let targetTile = $('td.empty').eq(_.random(0, emptyTilesCount));
-    drawFoodTile(targetTile);
-    foodCount = 1;
+    if ($('td.food').length === 0) {
+        let emptyTilesCount = totalTilesCount - snake.length;
+        let targetTile = $('td.empty').eq(_.random(0, emptyTilesCount));
+        drawFoodTile(targetTile);
+    }
 }
 
 function getCoords(tile) {
@@ -139,7 +138,6 @@ function moveSnake() {
     snake.unshift(getCoords(newHead));
 
     if (newHead.hasClass('food')) {
-        foodCount--;
         drawDigestingTile(newHead);
     } else {
         drawSnakeTile(newHead);
